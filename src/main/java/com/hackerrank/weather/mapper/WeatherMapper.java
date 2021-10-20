@@ -18,7 +18,6 @@ public class WeatherMapper {
         return Weather.builder()
                 .city(weatherInput.getCity())
                 .date(LocalDate.parse(weatherInput.getDate(), formatter))
-                .id(weatherInput.getId())
                 .lat(weatherInput.getLat())
                 .lon(weatherInput.getLon())
                 .state(weatherInput.getState())

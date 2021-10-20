@@ -35,7 +35,7 @@ public class WeatherService {
         return WeatherMapper.weatherToJSON(weather);
     }
 
-    public WeatherJSON getWeather(int id) {
+    public WeatherJSON getWeather(Integer id) {
 
        Weather weather = weatherRepository.findById(id)
                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no record in the collection with this id"));
