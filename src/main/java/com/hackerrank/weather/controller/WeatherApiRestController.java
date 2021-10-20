@@ -1,5 +1,6 @@
 package com.hackerrank.weather.controller;
 
+import com.hackerrank.weather.entities.Weather;
 import com.hackerrank.weather.model.WeatherInput;
 import com.hackerrank.weather.output.WeatherJSON;
 import com.hackerrank.weather.service.WeatherService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -35,9 +37,8 @@ public class WeatherApiRestController {
 
     @GetMapping("/weather/{id}")
     public ResponseEntity<WeatherJSON> getWeatherById(@Valid @NotNull @PathVariable Integer id) {
-       return null;
+        return new ResponseEntity<WeatherJSON>(weatherService.getWeather(id), HttpStatus.OK);
     }
-
 
     /**
      * Submit weather.
@@ -45,8 +46,7 @@ public class WeatherApiRestController {
      */
     @PostMapping(path = "/weather")
     public ResponseEntity<WeatherJSON> submitWeather(@RequestBody @Valid final WeatherInput weatherInput) {
-       return null;
+        return new ResponseEntity<WeatherJSON>(weatherService.newWeather(weatherInput), HttpStatus.CREATED);
     }
-
 
 }
