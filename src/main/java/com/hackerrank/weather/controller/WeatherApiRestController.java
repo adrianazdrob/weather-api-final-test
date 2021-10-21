@@ -2,6 +2,7 @@ package com.hackerrank.weather.controller;
 
 import com.hackerrank.weather.entities.Weather;
 import com.hackerrank.weather.model.WeatherInput;
+import com.hackerrank.weather.model.WeatherSearchCriteria;
 import com.hackerrank.weather.output.WeatherJSON;
 import com.hackerrank.weather.service.WeatherService;
 import com.hackerrank.weather.utils.Patterns;
@@ -32,12 +33,17 @@ public class WeatherApiRestController {
 
     @GetMapping("/weather")
     public List<WeatherJSON> getWeatherInfo(@Valid @Pattern(regexp = Patterns.YYYY_MM_DD_REGEXP) @RequestParam(required = false) String date, @RequestParam(required = false) String city, @RequestParam(required = false) String sort){
-       return null;
+        WeatherSearchCriteria weatherSearchCriteria = new WeatherSearchCriteria();
+        weatherSearchCriteria.setCity(city);
+        weatherSearchCriteria.setDate(date);
+        weatherSearchCriteria.setSort(sort);
+
+        return weatherService.getWeather(weatherSearchCriteria);
     }
 
     @GetMapping("/weather/{id}")
     public ResponseEntity<WeatherJSON> getWeatherById(@Valid @NotNull @PathVariable Integer id) {
-        return new ResponseEntity<WeatherJSON>(weatherService.getWeather(id), HttpStatus.OK);
+        return new ResponseEntity<WeatherJSON>(weatherService.getWeatherById(id), HttpStatus.OK);
     }
 
     /**
