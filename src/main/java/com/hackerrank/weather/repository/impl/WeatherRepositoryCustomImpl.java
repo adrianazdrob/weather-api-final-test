@@ -28,7 +28,6 @@ public class WeatherRepositoryCustomImpl implements WeatherRepositoryCustom {
         final CriteriaQuery<SearchWeatherJSON> criteriaQuery = criteriaBuilder.createQuery(SearchWeatherJSON.class);
         final Root<Weather> weatherRoot = criteriaQuery.from(Weather.class);
 
-
         List<Predicate> predicates = getFilterPredicates(weatherSearchCriteria,criteriaBuilder,weatherRoot);
         if(!predicates.isEmpty()) {
             criteriaQuery.where(predicates.toArray(new Predicate[]{}));
@@ -37,10 +36,10 @@ public class WeatherRepositoryCustomImpl implements WeatherRepositoryCustom {
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
-    private List<Predicate> getFilterPredicates(WeatherSearchCriteria weatherSearchCriteria, CriteriaBuilder criteriaBuilder, Root<Weather>weatherRoot) {
+    private List<Predicate> getFilterPredicates(WeatherSearchCriteria weatherSearchCriteria, CriteriaBuilder criteriaBuilder, Root<Weather> weatherRoot) {
         Predicate dateCondition = null;
 
-        if(weatherSearchCriteria.getDate() != null){
+        if(weatherSearchCriteria.getDate() != null) {
             dateCondition = criteriaBuilder.equal(weatherRoot.get("date"), weatherSearchCriteria.getDate());
         }
 

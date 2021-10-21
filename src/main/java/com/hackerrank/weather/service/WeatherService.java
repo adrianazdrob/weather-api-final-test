@@ -13,8 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.beans.Expression;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,15 +46,41 @@ public class WeatherService {
     }
 
     public List<WeatherJSON> getWeather(WeatherSearchCriteria weatherSearchCriteria) {
-        if(weatherSearchCriteria.getDate() != null) {
-            List<Weather> dateList = weatherRepository.findAll(isMatchingDate(weatherSearchCriteria));
-            return dateList.stream().map(weather -> WeatherMapper.weatherToJSON(weather)).collect(Collectors.toList());
-        } else{
-            return weatherRepository.findAll().stream().map(weather -> WeatherMapper.weatherToJSON(weather)).collect(Collectors.toList());
+
+        List<Weather> weathersInformation;
+
+        if(weatherSearchCriteria.getDate() != null && weatherSearchCriteria.getCity() != null){
+            String cityArray = weatherSearchCriteria.getCity().toLowerCase();
+            String[] cityList = cityArray.split(",");
+
+            weathersInformation = weatherRepository.findAll(Specification.where(isMatchingDate(weatherSearchCriteria)).and(isCity(cityList)));
+        } else if(weatherSearchCriteria.getDate() != null) {
+            weathersInformation = weatherRepository.findAll(isMatchingDate(weatherSearchCriteria));
+        } else if(weatherSearchCriteria.getCity() != null) {
+            String cityArray = weatherSearchCriteria.getCity().toLowerCase();
+            String[] cityList = cityArray.split(",");
+
+            weathersInformation = weatherRepository.findAll(isCity(cityList));
+        } else {
+            weathersInformation = weatherRepository.findAll();
         }
+
+        if("date".equals(weatherSearchCriteria.getSort())) {
+            weathersInformation = weathersInformation.stream().sorted(Comparator.comparing(Weather::getDate).thenComparing(Weather::getId)).collect(Collectors.toList());
+        } else if("-date".equals(weatherSearchCriteria.getSort())) {
+            weathersInformation = weathersInformation.stream().sorted(Comparator.comparing(Weather::getDate).reversed().thenComparing(Weather::getId)).collect(Collectors.toList());
+        } else {
+            weathersInformation = weathersInformation.stream().sorted(Comparator.comparingInt(Weather::getId)).collect(Collectors.toList());
+        }
+
+        return weathersInformation.stream().map(WeatherMapper::weatherToJSON).collect(Collectors.toList());
     }
 
     private Specification<Weather> isMatchingDate(WeatherSearchCriteria weatherSearchCriteria) {
         return (weatherRoot, criteriaQuery, builder) -> builder.equal(weatherRoot.get("date"), LocalDate.parse(weatherSearchCriteria.getDate()));
+    }
+
+    private Specification<Weather> isCity(String[] cityList) {
+        return (weatherRoot, criteriaQuery, builder) -> builder.lower(weatherRoot.get("city")).in(cityList);
     }
 }

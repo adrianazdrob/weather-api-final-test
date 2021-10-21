@@ -1,6 +1,5 @@
 package com.hackerrank.weather.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hackerrank.weather.utils.Patterns;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -17,12 +16,6 @@ public class WeatherSearchCriteria {
     private String date;
 
     private String city;
-    private String sort;
 
-    @JsonIgnore
-    public boolean isEmpty() {
-        return date == null
-                && city == null
-                && sort == null;
-    }
+    private String sort;
 }
